@@ -31,3 +31,11 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+
+*.Rproj
+.Rproj.user
+.Rhistory
+.RData
+data/options/*
+data/ivolatility_raw_files/*
