@@ -1,16 +1,18 @@
-# Header------------------------------------------------------------------------
-# title: "Monthly expiration dates"
-# author: "Jason Taylor"
-# update: "Dec-21-2016"
+#' Find third friday of month
+#' @description{
+#' third_friday creates a data.frame with options expiration dates to be used in
+#' the tidy data process.  The third friday date identifies monthly expirations
+#' compared to weeklys.
+#' }
+#' @param start_yr Numeric year to begin third friday  calendar
+#' @param end_yr Numeric year to end third friday calendar
+#'
+#' @return data.frame \code{monthly_exp_date} with the third friday of each month
+#' when options expire.
+#'
+#' @examples
+#' third_friday(2010, 2015)
 
-
-# TODO(jason):------------------------------------------------------------------
-
-
-# Function:---------------------------------------------------------------------
-
-
-# Find third friday of month
 third_friday <- function(start_yr, end_yr) {
   range_yr <- list(seq(start_yr, end_yr, by = 1))
   calendar <- data.frame(mon = unlist(rep(list(1:12), length(range_yr))),

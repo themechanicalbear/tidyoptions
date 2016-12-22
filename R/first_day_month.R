@@ -1,19 +1,3 @@
-# Header------------------------------------------------------------------------
-# title: "First day of month calendar"
-# author: "Jason Taylor"
-# update: "Dec-20-2016"
-
-
-# TODO(jason):------------------------------------------------------------------
-
-
-# Instructions:-----------------------------------------------------------------
-# - Update the market closed dates prior to running
-# - Calendar is created through 2020 update if needed
-
-
-comment.for.build <- TRUE
-if (comment.for.build == FALSE) {
 
   # Dates the market was closed and can'te be used in studies
   closed_dates <- fread("data/market_closed.csv")
@@ -42,7 +26,7 @@ if (comment.for.build == FALSE) {
   # Save data to be resused in options.data package
   save(open_first_day_month, file = "data/open_first_day_month.RData")
 
-}
+
 
 
 

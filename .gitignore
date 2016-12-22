@@ -26,5 +26,5 @@ vignettes/*.pdf
 *.Rproj
 .Rproj.user
 data/options/*
-data/ivolatility_raw_files/*
+data/raw_files/*
 inst/doc
