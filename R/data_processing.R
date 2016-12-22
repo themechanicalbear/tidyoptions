@@ -1,45 +1,46 @@
-# Header-----------------------------------------------------------------------
-# title: "Data processing step #1"
-# author: "Jason Taylor"
-# update: "Dec-20-2016"
+#' Tidy iVolatility options .csv files
+#'
+#' @description{
+#' tidy_options produces a tidy dataset from downloaded iVolatility.com files.
+#' Download data from \href{http://www.ivolatility.com/data_download.j}{http://www.ivolatility.com/data_download.j}
+#'
+#'    \itemize{
+#'       \item Individual contracts (Raw IV) data
+#'       \item include greeks in file download
+#'       \item place files in folder under the working directory
+#'       \item ensure that market closed dates are current
+#'     }
+#' }
+#' @param symbol Character string for symbol you would like to process
+#'
+#'   Value will be used to name the output .RData file
+#'
+#' @param opt_path Character string of path to iVolatility files
+#'
+#'   When files are downloaded from iVolatility they are limited in size to 50Mb.
+#'   Place all the files in the "opt_path" folder under your working directory.
+#'
+#' @param iv_file Character string of volatility file for symbol chosen
+#'
+#'   IVRank data from \href{http://www.cboe.com/micro/equityvix/introduction.aspx}{http://www.cboe.com/micro/equityvix/introduction.aspx}
+#'   make sure to remove the disclaimer at the top of the file from this site.
+#'
+#'   IV can also be calculated outside this process and used if the file format
+#'   is the same.
+#'
+#' @return \code{tidy_options} returns tidy options chain data with
+#'  (rsi_14, iv_rank_252, and iv_rank_90) added.
+#'
+#'  Output can then be used in \code{options.shiny} and \code{options.studies}
+#'  for backtesting.
+#'
+#' @export
+#'
+#' @examples
+#' complete.data <- tidy_options("SPY", "data/raw", "vx.xle.daily.prices.RData")
 
-
-# TODO(jason):-----------------------------------------------------------------
-
-
-# Instructions:----------------------------------------------------------------
-# This is the first script in the data cleansing process from iVolatility.com
-#  **************  Uncomment to run after downloading data. *******************
-# **************    Raw data is not included in package.   ********************
-# **************         Instructions to get data     *************************
-
-# 1.  Download data from http://www.ivolatility.com/data_download.j
-#     - Individual contracts (Raw IV) data
-#     - include greeks in file download
-# 2.  Combine multiple raw files to one file
-# 3.  Ensure that the market closed dates are up to date
-# 4.  IVRank data from http://www.cboe.com/micro/equityvix/introduction.aspx
-#     - Make sure you remove the disclaimer at the top line of file
-
-# Build------------------------------------------------------------------------
-comment.for.build <- TRUE
-if (comment.for.build == FALSE) {
-
-# Setup------------------------------------------------------------------------
-  # Ensure environment includes libraries needed
-  library(data.table)
-  library(dplyr)
-  library(TTR)
-  library(RcppBDT)
-  library(purrr)
-
-  # BEGIN - Area of customization for different symbols--------------------------
-
-  # Add IV data to dataset choose file associated with the symbol chosen
-  data(vx.vix.daily.prices)
-
-  # Script expects files in the working directory under the following folder
-  files <- list.files(path = "data/ivolatility_raw_files",
+tidy_options <- function(symbol, opt_path, iv_file) {
+  files <- list.files(path = opt_path,
                       pattern = ".csv", full.names = TRUE)
 
   rbind_csv <- function(file_name) {
@@ -48,18 +49,12 @@ if (comment.for.build == FALSE) {
 
   dat <- map(files, rbind_csv)
   raw_data <- bind_rows(dat)
-
-  # Assign symbol variable to process
-  symbol <- as.character(raw_data[1, "symbol"])
-
-
-  # Process data-----------------------------------------------------------------
+  load(iv_file)
 
   # Dates the market was closed and can't be used in studies
   closed_dates <- fread("data/market_closed.csv")
   closed_dates$closed_dates <- as.Date(closed_dates$closed_dates)
 
-  # Remove columns we don't need to save space and processing time in later
   # This removes (exchange, style, stock price for IV, and *)
   raw_data <- raw_data %>%
     select(-c(2, 9, 16, 17)) %>%
@@ -121,6 +116,9 @@ if (comment.for.build == FALSE) {
     filter(rsi_14 != "NA",
            iv_rank_252 != "NA")
 
+  #complete.data
+
   # Export to .rda file for package
-  save(complete.data, file = paste0(symbol, ".options.RData"))
+  #save(complete.data, file = paste0(symbol, ".options.RData"))
 }
+

@@ -16,18 +16,22 @@ Depends:
     dplyr,
     data.table,
     scales,
-    RcppBDT
+    RcppBDT,
+    TTR,
+    purrr
 Imports:
     lubridate,
     dplyr,
     data.table,
     scales,
-    RcppBDT
+    RcppBDT,
+    TTR,
+    purrr
 Suggests:
     knitr,
     rmarkdown
-VignetteBuilder: knitr    
+VignetteBuilder: knitr
 LinkingTo: 
 LazyData: yes
 License: MIT + file LICENSE
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1
