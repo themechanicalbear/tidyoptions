@@ -36,8 +36,13 @@
 #'
 #' @export
 #'
+#' @importFrom dplyr bind_rows filter left_join
+#' @importFrom lubridate year
+#' @importFrom TTR RSI runPercentRank
+#'
+#'
 #' @examples
-#' complete.data <- tidy_options("SPY", "data/raw", "vx.xle.daily.prices.RData")
+#' tidy_options("XLE", "data/raw_files/options", "data/volatility/vx.xle.daily.prices.RData")
 
 tidy_options <- function(symbol, opt_path, iv_file) {
   files <- list.files(path = opt_path,
@@ -52,8 +57,7 @@ tidy_options <- function(symbol, opt_path, iv_file) {
   load(iv_file)
 
   # Dates the market was closed and can't be used in studies
-  closed_dates <- fread("data/market_closed.csv")
-  closed_dates$closed_dates <- as.Date(closed_dates$closed_dates)
+  market_closed <- market_closed$date
 
   # This removes (exchange, style, stock price for IV, and *)
   raw_data <- raw_data %>%
@@ -71,23 +75,21 @@ tidy_options <- function(symbol, opt_path, iv_file) {
     third_friday(min(year(raw_data$date)), max(year(raw_data$date)))
 
   # Remove rows for dates that the market was closed
-  # For some reason iVolatility sometimes includes these
   raw_data <- raw_data %>%
     mutate(exp_day = weekdays(expiration, abbreviate = FALSE),
            expiration = as.Date(ifelse(exp_day == "Saturday",
                                        expiration - 1,
                                        expiration), origin = "1970-01-01"),
-           expiration = as.Date(ifelse(expiration %in% closed_dates,
+           expiration = as.Date(ifelse(expiration %in% market_closed,
                                        expiration - 1,
                                        expiration), origin = "1970-01-01"),
            dte = as.integer(expiration - date),
            exp_type = ifelse(is.element(expiration, monthy_exp_dates),
                              "Monthly", "Weekly")) %>%
-    filter(!date %in% closed_dates) %>%
+    filter(!date %in% market_closed) %>%
     select(-exp_day)
 
   # Calculate rsi_14 day for use in studies
-  # Gather all the unique trading dates to calculate study values
   unique_dates <- raw_data %>%
     distinct(date, .keep_all = TRUE) %>%
     mutate(rsi_14 = RSI(price, 14)) %>%
@@ -98,7 +100,7 @@ tidy_options <- function(symbol, opt_path, iv_file) {
   # Remove market closed dates from IV data
   iv.raw.data <- iv.raw.data %>%
     mutate(date = as.Date(Date, "%m/%d/%Y")) %>%
-    filter(!date %in% closed_dates) %>%
+    filter(!date %in% market_closed) %>%
     mutate(iv_rank_252 = round(100 * runPercentRank(Close, n = 252,
                                                     cumulative = FALSE,
                                                     exact.multiplier = 1),
@@ -109,16 +111,13 @@ tidy_options <- function(symbol, opt_path, iv_file) {
                               digits = 0)) %>%
     select(date, iv_rank_252, iv_rank_90)
 
-  # Join the data together adding iv_rank
+  # Join adding iv_rank
   raw_data <- left_join(raw_data, iv.raw.data, by = "date")
 
   complete.data <- raw_data %>%
     filter(rsi_14 != "NA",
            iv_rank_252 != "NA")
 
-  #complete.data
-
-  # Export to .rda file for package
-  #save(complete.data, file = paste0(symbol, ".options.RData"))
+  save(complete.data, file = paste0("data/options/", symbol, ".options.RData"))
 }
 

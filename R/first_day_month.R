@@ -1,34 +1,42 @@
+#' find first day of month
+#' @description{
+#' first_day_month creates a data.frame with the first day of the month
+#' to be used in the tidy data process.  The first day of the month is used as a
+#' trade entry criteria in options.shiny and options.studies.
+#' }
+#' @param start_yr Numeric year to begin calendar
+#' @param end_yr Numeric year to end calendar
+#'
+#' @export
+#'
+#' @importFrom dplyr arrange select distinct mutate
+#' @importFrom lubridate mdy
+#' @importFrom magrittr %>%
+#'
+#' @return data.frame \code{monthly} in the years passed to function saved as
+#' "data/monthly.RData".
+#'
+#' @examples
+#' monthly <- monthly(2010, 2020)
+#'
 
-  # Dates the market was closed and can'te be used in studies
-  closed_dates <- fread("data/market_closed.csv")
-  closed_dates$closed_dates <- as.Date(closed_dates$closed_dates)
+first_day_month <- function(start_yr, end_yr) {
+  market_closed <- market_closed$date
 
-  # Create first day of the month data file for use on trade entry
-  open_first_day_month <- data.frame(day = 1,
-                                     mon = c(1:12, 1:12, 1:12, 1:12, 1:12, 1:12, 1:12, 1:12,
-                                             1:12, 1:12, 1:12),
-                                     year = c(rep(2010, 12),rep(2011, 12), rep(2012, 12),
-                                              rep(2013, 12), rep(2014, 12), rep(2015, 12),
-                                              rep(2016, 12), rep(2017, 12), rep(2018, 12),
-                                              rep(2019, 12), rep(2020, 12)))
+  range_yr <- list(seq(start_yr, end_yr, by = 1))
+  calendar <- data.frame(day = 1,
+                         mon = unlist(rep(list(1:12), length(range_yr))),
+                         year = sort(mapply(rep, range_yr, 12)))
+  monthly <- calendar %>%
+    mutate(date = as.Date(mdy(paste0(mon, "-", day, "-", year))),
+           date = ifelse(date %in% market_closed, date + 1, date),
+           day_week = weekdays(as.Date(date, origin = "1970-01-01"), abbreviate = FALSE),
+           date = as.Date(ifelse(day_week == "Saturday", date + 2,
+                                 ifelse(day_week == "Sunday", date + 1,
+                                        date)), origin = "1970-01-01")) %>%
+    arrange(date) %>%
+    select(date) %>%
+    distinct(date)
 
-  # Combine the columns to create data frame of dates
-  open_first_day_month <- open_first_day_month %>%
-    mutate(date = as.Date(mdy(paste0(mon, "-", day, "-", year)))) %>%
-    mutate(day_week = weekdays(date, abbreviate = FALSE)) %>%
-    mutate(date = ifelse(day_week == "Saturday", date + 2, date)) %>%
-    mutate(date = ifelse(day_week == "Sunday", date + 1, date)) %>%
-    mutate(date = as.Date(date, origin = "1970-01-01")) %>%
-    mutate(date = ifelse(date %in% closed_dates, date + 1, date)) %>%
-    mutate(date = as.Date(date, origin = "1970-01-01")) %>%
-    select(date)
-
-  # Save data to be resused in options.data package
-  save(open_first_day_month, file = "data/open_first_day_month.RData")
-
-
-
-
-
-
-
+  save(monthly, file = "data/monthly.RData")
+}

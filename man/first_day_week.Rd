@@ -7,13 +7,13 @@
 first_day_week(start_yr, end_yr)
 }
 \arguments{
-\item{start_yr}{Numeric year to begin third friday  calendar}
+\item{start_yr}{Numeric year to begin calendar}
 
-\item{end_yr}{Numeric year to end third friday calendar}
+\item{end_yr}{Numeric year to end calendar}
 }
 \value{
-data.frame \code{monthly_exp_date} with the third friday of each month
-when options expire.
+data.frame \code{mondays} in the years passed to function saved as
+"data/mondays.RData".
 }
 \description{
 {
@@ -23,6 +23,6 @@ trade entry criteria in options.shiny and options.studies.
 }
 }
 \examples{
-open_weekly <- first_day_week(2010, 2020)
+mondays <- first_day_week(2010, 2020)
 }
 

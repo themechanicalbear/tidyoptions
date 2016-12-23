@@ -7,10 +7,11 @@
 mrkt_closed(file_name)
 }
 \arguments{
-\item{closed}{String of file to be read in.}
+\item{file_name}{String of file to be read in.}
 }
 \value{
-data.frame \code{market_closed} with the each day the market was closed
+data.frame \code{market_closed} with the each day the market was closed saved
+as "data/market_closed.RData".
 }
 \description{
 {

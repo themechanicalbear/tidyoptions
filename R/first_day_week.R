@@ -9,6 +9,11 @@
 #'
 #' @export
 #'
+#' @importFrom dplyr arrange select distinct mutate
+#' @importFrom magrittr %>%
+#' @importFrom purrr map
+#' @importFrom RcppBDT getNthDayOfWeek
+#'
 #' @return data.frame \code{mondays} in the years passed to function saved as
 #' "data/mondays.RData".
 #'

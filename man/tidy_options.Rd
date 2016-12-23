@@ -45,6 +45,6 @@ Download data from \href{http://www.ivolatility.com/data_download.j}{http://www.
 }
 }
 \examples{
-complete.data <- tidy_options("SPY", "data/raw", "vx.xle.daily.prices.RData")
+tidy_options("XLE", "data/raw_files/options", "data/volatility/vx.xle.daily.prices.RData")
 }
 

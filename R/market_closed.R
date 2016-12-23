@@ -11,6 +11,8 @@
 #'
 #' @export
 #'
+#' @importFrom data.table fread
+#'
 #' @examples
 #' market_closed <- mrkt_closed("data/market_closed.csv")
 

@@ -10,6 +10,8 @@
 #' @return data.frame \code{monthly_exp_date} with the third friday of each month
 #' when options expire.
 #'
+#' @importFrom RcppBDT getNthDayOfWeek
+#'
 #' @examples
 #' third_friday(2010, 2015)
 
