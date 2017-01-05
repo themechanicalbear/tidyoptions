@@ -1,4 +1,4 @@
-Package: options.data
+Package: tidyoptions
 Type: Package
 Version: 0.0.0.9000
 Title: Tidy options data from iVolatility.com
@@ -8,8 +8,8 @@ Authors@R: c(
     person("Jason", "Taylor", , "jason@themechanicalbear.com", c("aut", "cre")),
     person("The Mechanical Bear, LLC", role = "cph")
     )
-URL: https://github.com/themechanicalbear/options.data
-BugReports: https://github.com/themechanicalbear/options.data/issues
+URL: https://github.com/themechanicalbear/tidyoptions
+BugReports: https://github.com/themechanicalbear/tidyoptions/issues
 Depends:
     R (>= 3.2.2),
 Imports:

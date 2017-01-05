@@ -36,24 +36,27 @@
 #'
 #' @export
 #'
-#' @importFrom dplyr bind_rows filter left_join
-#' @importFrom lubridate year
+#' @importFrom dplyr bind_rows filter left_join select mutate distinct
+#' @importFrom lubridate year parse_date_time
 #' @importFrom TTR RSI runPercentRank
+#' @importFrom data.table fread
+#' @importFrom purrr map
+#' @importFrom RccpBDT
 #'
 #'
 #' @examples
 #' tidy_options("XLE", "data/raw_files/options", "data/volatility/vx.xle.daily.prices.RData")
 
-tidy_options <- function(symbol, opt_path, iv_file) {
+tidy_options <- function(ticker, opt_path, iv_file) {
   files <- list.files(path = opt_path,
                       pattern = ".csv", full.names = TRUE)
 
   rbind_csv <- function(file_name) {
-    fread(file_name)
+    data.table::fread(file_name)
   }
 
-  dat <- map(files, rbind_csv)
-  raw_data <- bind_rows(dat)
+  dat <- purrr::map(files, rbind_csv)
+  raw_data <- dplyr::bind_rows(dat)
   load(iv_file)
 
   # Dates the market was closed and can't be used in studies
@@ -61,9 +64,10 @@ tidy_options <- function(symbol, opt_path, iv_file) {
 
   # This removes (exchange, style, stock price for IV, and *)
   raw_data <- raw_data %>%
-    select(-c(2, 9, 16, 17)) %>%
-    mutate(date = as.Date(date, "%m/%d/%y"),
-           expiration = as.Date(expiration, "%m/%d/%y"))
+    dplyr::select(-c(2, 9, 16, 17)) %>%
+    dplyr::filter(symbol == ticker) %>%
+    dplyr::mutate(date = as.Date(lubridate::parse_date_time(date, "%m/%d/%y")),
+           expiration = as.Date(lubridate::parse_date_time(expiration, "%m/%d/%y")))
 
   names(raw_data) <- c("symbol", "date", "price", "option", "expiration",
                        "strike", "call.put", "ask", "bid", "mid.price",
@@ -72,11 +76,11 @@ tidy_options <- function(symbol, opt_path, iv_file) {
 
   # Third Friday expiration dates
   monthy_exp_dates <-
-    third_friday(min(year(raw_data$date)), max(year(raw_data$date)))
+    third_friday(min(lubridate::year(raw_data$date)), max(lubridate::year(raw_data$date)))
 
   # Remove rows for dates that the market was closed
   raw_data <- raw_data %>%
-    mutate(exp_day = weekdays(expiration, abbreviate = FALSE),
+    dplyr::mutate(exp_day = weekdays(expiration, abbreviate = FALSE),
            expiration = as.Date(ifelse(exp_day == "Saturday",
                                        expiration - 1,
                                        expiration), origin = "1970-01-01"),
@@ -86,38 +90,38 @@ tidy_options <- function(symbol, opt_path, iv_file) {
            dte = as.integer(expiration - date),
            exp_type = ifelse(is.element(expiration, monthy_exp_dates),
                              "Monthly", "Weekly")) %>%
-    filter(!date %in% market_closed) %>%
-    select(-exp_day)
+    dplyr::filter(!date %in% market_closed) %>%
+    dplyr::select(-exp_day)
 
   # Calculate rsi_14 day for use in studies
   unique_dates <- raw_data %>%
-    distinct(date, .keep_all = TRUE) %>%
-    mutate(rsi_14 = RSI(price, 14)) %>%
-    select(date, rsi_14)
+    dplyr::distinct(date, .keep_all = TRUE) %>%
+    dplyr::mutate(rsi_14 = TTR::RSI(price, 14)) %>%
+    dplyr::select(date, rsi_14)
 
-  raw_data <- left_join(raw_data, unique_dates, by = "date")
+  raw_data <- dplyr::left_join(raw_data, unique_dates, by = "date")
 
   # Remove market closed dates from IV data
   iv.raw.data <- iv.raw.data %>%
-    mutate(date = as.Date(Date, "%m/%d/%Y")) %>%
-    filter(!date %in% market_closed) %>%
-    mutate(iv_rank_252 = round(100 * runPercentRank(Close, n = 252,
+    dplyr::mutate(date = as.Date(lubridate::parse_date_time(Date, "%m/%d/%Y"))) %>%
+    dplyr::filter(!date %in% market_closed) %>%
+    dplyr::mutate(iv_rank_252 = round(100 * TTR::runPercentRank(Close, n = 252,
                                                     cumulative = FALSE,
                                                     exact.multiplier = 1),
                                digits = 0),
-           iv_rank_90 = round(100 * runPercentRank(Close, n = 90,
+           iv_rank_90 = round(100 * TTR::runPercentRank(Close, n = 90,
                                                    cumulative = FALSE,
                                                    exact.multiplier = 1),
                               digits = 0)) %>%
-    select(date, iv_rank_252, iv_rank_90)
+    dplyr::select(date, iv_rank_252, iv_rank_90)
 
   # Join adding iv_rank
-  raw_data <- left_join(raw_data, iv.raw.data, by = "date")
+  raw_data <- dplyr::left_join(raw_data, iv.raw.data, by = "date")
 
   complete.data <- raw_data %>%
-    filter(rsi_14 != "NA",
+    dplyr::filter(rsi_14 != "NA",
            iv_rank_252 != "NA")
 
-  save(complete.data, file = paste0("data/options/", symbol, ".options.RData"))
+  save(complete.data, file = paste0("data/options/", ticker, ".options.RData"))
 }
 

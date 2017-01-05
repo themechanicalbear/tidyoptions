@@ -4,13 +4,9 @@
 \alias{tidy_options}
 \title{Tidy iVolatility options .csv files}
 \usage{
-tidy_options(symbol, opt_path, iv_file)
+tidy_options(ticker, opt_path, iv_file)
 }
 \arguments{
-\item{symbol}{Character string for symbol you would like to process
-
-  Value will be used to name the output .RData file}
-
 \item{opt_path}{Character string of path to iVolatility files
 
   When files are downloaded from iVolatility they are limited in size to 50Mb.
@@ -23,6 +19,10 @@ tidy_options(symbol, opt_path, iv_file)
 
   IV can also be calculated outside this process and used if the file format
   is the same.}
+
+\item{symbol}{Character string for symbol you would like to process
+
+  Value will be used to name the output .RData file}
 }
 \value{
 \code{tidy_options} returns tidy options chain data with

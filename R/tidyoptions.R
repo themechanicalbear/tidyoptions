@@ -1,13 +1,13 @@
-# title: "options.data.R"
+# title: "tidyoptions.R"
 # author: "Jason Taylor"
 
 # todos:
 # - need to modify and run the earnings.open.R file to create the necessary .Rdata
 # files
 
-#' options.data: Processed option chain data from iVolatility.com
+#' tidyoptions: Processed option chain data from iVolatility.com
 #'
-#' options.data creates tidy option chain data from iVolatility.com.  It's
+#' tidyoptions creates tidy option chain data from iVolatility.com.  It's
 #' the starting point to performing quantatative options trading analysis and
 #' research. Utilities to create the data and utility functions to run studies
 #' are included in the package.
@@ -36,9 +36,9 @@
 #' \item returns complete cases of tidy data (missing data is removed rather than adjusted)
 #' }
 #'
-#' To learn more about options.data, start with the vignettes:
-#' \code{browseVignettes(package = "options.data")}
+#' To learn more about tidyoptions, start with the vignettes:
+#' \code{browseVignettes(package = "tidyoptions")}
 #'
 #' @docType package
-#' @name options.data
+#' @name tidyoptions
 NULL

@@ -1,0 +1,121 @@
+---
+title: "Introduction to options.data"
+author: "Jason Taylor"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to options.data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>")
+options(tibble.print_min = 4L, tibble.print_max = 4L)
+library(dplyr)
+library(data.table)
+```
+
+When creating tidy options data you must:
+
+* Gather the raw options data (this package requires iVolatilty source data)
+
+* Remove dates where the market was closed
+
+* Add variables to the dataset used in studies ie. (rsi, ivrank, dte)
+
+The options.data package makes these steps fast and easy:
+
+* It provides simple functions that correspond the most common issues with raw option data.
+
+* Requires the TTR package so that you can add additional indicators easily.
+
+This document introduces you to options.data's functions and shows you how to apply them.
+
+## Raw options data: 
+
+Sample of the data retrieved from iVolatility.com read in from the raw .csv files
+
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE, error=FALSE}
+library(options.data)
+knitr::kable(raw_example[, 1:10])
+knitr::kable(raw_example[, 11:22])
+```
+
+As you can see the dataset is not quite ready for use in studies:
+
+* We can safely remove the exchange, adjusted stock price, style, and asterix columns
+
+* We also need to add the rsi_14, iv_rank_90, and iv_rank_252 values to the dataset
+
+## Functions included in the package:
+
+* `tidy_options()`
+
+* `first_day_month()`
+
+* `first_day_week()`
+
+* `daily()`
+
+* `market_closed()`
+
+* `third_friday()`
+
+* `earnings_dates()`
+
+## Create tidy options data with `tidy_options()`
+
+`tidy_options()` creates the final tidy output data.frame.  The first arguement is
+the name of the underlying you are processing, for example "XLE".  The second and
+third arguements are the folder holding the raw options .csv files, and the iv file
+with the root being your working directory. 
+
+Example call:
+```{r, eval=FALSE}
+tidy_options("XLE", "data/raw_files/options", "data/volatility/vx.xle.daily.prices.RData")
+```
+
+Output is saved to "data/options/`symbol`.options.RData"
+
+Sample output: 
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE, error=FALSE}
+knitr::kable(processed_example[, 1:7])
+knitr::kable(processed_example[, 8:16])
+knitr::kable(processed_example[, 17:23])
+```
+
+## Create data.frames of dates to open trades:
+
+_each function takes the arguements `start_yr` and `end_yr`_
+
+* `first_day_month()` creates data.frame of first day in month adjusted for
+market closed dates. `monthly.RData` is included in the package with start and 
+end dates of 2010 - 2020.
+
+* `first_day_week()` creates data.frame of first day in week adjusted for
+market closed dates. `mondays.RData` is included in the package with start and 
+end dates of 2010 - 2020.
+
+* `daily()` creates data.frame with all days the market was open. 
+`daily.RData` is included in the package with start and 
+end dates of 2010 - 2020.
+
+## Market closed:
+
+`market_closed` creates data.frame of all dates the market was closed from 
+`start_yr` to `end_yr` `market_closed.RData` is included in the package with start and 
+end dates of 2010 - 2016.
+
+## Calculate monthly expiration dates `third_friday()`
+
+`third_friday` calculates the monthly expiration dates for the arguements 
+`start_yr`, `end_yr` which is then used in studies to limit opening trades to 
+monthly expirations. These values are not exported as a dataset but rather added 
+to the processed option dataset.
+
+## Earnings dates:
+
+`earnings_dates()` creates a data.frame of the earnings dates from csv files that
+need to be updated manually as the time window of data expands.
+`earnings.RData` is included in the package with start and 
+end dates of 2010 - 2016.
