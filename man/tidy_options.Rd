@@ -4,7 +4,7 @@
 \alias{tidy_options}
 \title{Tidy iVolatility options .csv files}
 \usage{
-tidy_options(ticker, opt_path, iv_file)
+tidy_options(ticker, opt_path, iv_file, out_path)
 }
 \arguments{
 \item{opt_path}{Character string of path to iVolatility files
@@ -45,6 +45,6 @@ Download data from \href{http://www.ivolatility.com/data_download.j}{http://www.
 }
 }
 \examples{
-tidy_options("XLE", "data/raw_files/options", "data/volatility/vx.xle.daily.prices.RData")
+tidy_options("XLE", "data/raw_files/options", "data/volatility/vx.xle.daily.prices.RData", "data/options/")
 }
 

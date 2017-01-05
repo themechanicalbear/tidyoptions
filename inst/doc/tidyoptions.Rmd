@@ -1,10 +1,10 @@
 ---
-title: "Introduction to options.data"
+title: "Introduction to tidyoptions"
 author: "Jason Taylor"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to options.data}
+  %\VignetteIndexEntry{Introduction to tidyoptions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -23,20 +23,20 @@ When creating tidy options data you must:
 
 * Add variables to the dataset used in studies ie. (rsi, ivrank, dte)
 
-The options.data package makes these steps fast and easy:
+The tidyoptions package makes these steps fast and easy:
 
 * It provides simple functions that correspond the most common issues with raw option data.
 
 * Requires the TTR package so that you can add additional indicators easily.
 
-This document introduces you to options.data's functions and shows you how to apply them.
+This document introduces you to tidyoptions's functions and shows you how to apply them.
 
 ## Raw options data: 
 
 Sample of the data retrieved from iVolatility.com read in from the raw .csv files
 
 ```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE, error=FALSE}
-library(options.data)
+library(tidyoptions)
 knitr::kable(raw_example[, 1:10])
 knitr::kable(raw_example[, 11:22])
 ```

@@ -23,7 +23,8 @@ Imports:
     purrr
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
 LinkingTo: 
 LazyData: true

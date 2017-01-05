@@ -1,4 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+data/options/*
+data/raw_files/*
 
 

@@ -41,13 +41,13 @@
 #' @importFrom TTR RSI runPercentRank
 #' @importFrom data.table fread
 #' @importFrom purrr map
-#' @importFrom RccpBDT
+#' @importFrom RcppBDT getNthDayOfWeek
 #'
 #'
 #' @examples
-#' tidy_options("XLE", "data/raw_files/options", "data/volatility/vx.xle.daily.prices.RData")
+#' tidy_options("XLE", "data/raw_files/options", "data/volatility/vx.xle.daily.prices.RData", "data/options/")
 
-tidy_options <- function(ticker, opt_path, iv_file) {
+tidy_options <- function(ticker, opt_path, iv_file, out_path) {
   files <- list.files(path = opt_path,
                       pattern = ".csv", full.names = TRUE)
 
@@ -122,6 +122,6 @@ tidy_options <- function(ticker, opt_path, iv_file) {
     dplyr::filter(rsi_14 != "NA",
            iv_rank_252 != "NA")
 
-  save(complete.data, file = paste0("data/options/", ticker, ".options.RData"))
+  save(complete.data, file = paste0(out_path, ticker, ".options.RData"))
 }
 

@@ -5,7 +5,7 @@ library(dplyr)
 library(data.table)
 
 ## ---- echo=FALSE, results='asis', warning=FALSE, message=FALSE, error=FALSE----
-library(options.data)
+library(tidyoptions)
 knitr::kable(raw_example[, 1:10])
 knitr::kable(raw_example[, 11:22])
 
