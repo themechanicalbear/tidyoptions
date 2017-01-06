@@ -4,6 +4,8 @@
 #' }
 #' @param x Numeric
 #'
+#' @export
+#'
 #' @return numeric with 2 decimal places and big.mark comma
 #'
 #' @examples

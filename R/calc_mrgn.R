@@ -1,12 +1,16 @@
-# Header------------------------------------------------------------------------
-# title: "Calculate Margin"
-# author: "Jason Taylor"
-# update: "Dec-20-2016"
-
-
-# TODO(jason):------------------------------------------------------------------
-
-
+#' Calculate initial margin on opening trades
+#'
+#' @description{
+#' calc_mrgn calculates the opening margin required depending on strategy type
+#' }
+#'
+#' @export
+#'
+#'
+#'
+#' @examples
+#'
+#'
 # Function arguments:-----------------------------------------------------------
 #   strat = option strategy
 #   prc = stock price

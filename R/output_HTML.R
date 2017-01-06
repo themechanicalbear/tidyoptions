@@ -1,11 +1,15 @@
-# TODO(jason):------------------------------------------------------------------
-# - check on scoping warnings code diagnostics to see if they can be cleaned up
+#' Simple function to format HTML output to pass back to shiny
+#'
+#' @description{
+#' output_HTML Called by the server.R script to send HTML output to screen
+#' }
+#'
+#' @export
+#'
+#' @examples
+#'
 
-# Function----------------------------------------------------------------------
-# Simple function to format HTML output to pass back to shiny
-# Called by the server.R script to send HTML output to screen
-
-outputHTML <- function(){
+output_HTML <- function(){
   output$total_profit <- renderUI({
     HTML(paste0("Total return: $", print_money(tot_profit)))
   })

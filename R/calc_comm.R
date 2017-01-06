@@ -1,4 +1,19 @@
-# Function arguments:-----------------------------------------------------------
+#' Calculate commisions on trade execution
+#'
+#' @description{
+#' calc_comm calculates commission fees for trades based on TD Ameritrades fee
+#' structure
+#' }
+#'
+#' @export
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#'
+#'# Function arguments:-----------------------------------------------------------
 #   strat = option strategy
 #   close = closing option mid price
 #   profit = trade profits prior to commissions
@@ -9,7 +24,7 @@
 
 # Function----------------------------------------------------------------------
 # Add in commission at a rate of $1.5 per contract excluding closing <= .05
-calc_comm <- function(strat = NULL, close = NULL, profit = NULL) {
+calc_comm <- function(strat = NULL, close = 0, profit = 0) {
   if (strat == "short_put") {
     ifelse(close <= .05, profit - 1.5, profit - 3)
   }
