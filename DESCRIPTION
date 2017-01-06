@@ -1,9 +1,12 @@
 Package: tidyoptions
 Type: Package
 Version: 0.0.0.9000
-Title: Tidy options data from iVolatility.com
+Title: Tidy options data from iVolatility.com used to perform backtesting of
+    common option trade strategies
 Description: Library enables customer to load processed options chain data
     downloaded from iVolatitly.com and processed with the data cleansing script.
+    Then use functions to perform backtesting of options strategies using data
+    loaded with shinyoptions package
 Authors@R: c(
     person("Jason", "Taylor", , "jason@themechanicalbear.com", c("aut", "cre")),
     person("The Mechanical Bear, LLC", role = "cph")

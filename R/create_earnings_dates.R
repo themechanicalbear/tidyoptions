@@ -1,12 +1,3 @@
-# Header------------------------------------------------------------------------
-# title: "Earnings dates"
-# author: "Jason Taylor"
-# Update: "Dec-20-2016"
-
-
-# TODO(jason):------------------------------------------------------------------
-
-
 # Function----------------------------------------------------------------------
 comment.for.build <- TRUE
 if (comment.for.build == FALSE) {
@@ -24,7 +15,7 @@ if (comment.for.build == FALSE) {
                                                 "2015-07-23", "2015-10-22")),
                                        stringsAsFactors = FALSE)
   names(AMZN.earnings.dates) <- "date"
-  earnings.dates <- mutate(AMZN.earnings.dates,
+  earnings.dates <- dplyr::mutate(AMZN.earnings.dates,
                                   date = as.Date(date, origin = "1970-01-01"))
 
   save(earnings.dates, file = "data/earnings.dates.AMZN.RData")
@@ -44,7 +35,7 @@ if (comment.for.build == FALSE) {
                                                 "2015-07-16", "2015-10-22")),
                                        stringsAsFactors = FALSE)
   names(GOOG.earnings.dates) <- "date"
-  earnings.dates <- mutate(GOOG.earnings.dates,
+  earnings.dates <- dplyr::mutate(GOOG.earnings.dates,
                                   date = as.Date(date, origin = "1970-01-01"))
 
   save(earnings.dates, file = "data/earnings.dates.GOOG.RData")
@@ -66,7 +57,7 @@ if (comment.for.build == FALSE) {
                                               "2016-01-20")),
                                      stringsAsFactors = FALSE)
   names(GS.earnings.dates) <- "date"
-  earnings.dates <- mutate(GS.earnings.dates,
+  earnings.dates <- dplyr::mutate(GS.earnings.dates,
                                   date = as.Date(date, origin = "1970-01-01"))
 
   save(earnings.dates, file = "data/earnings.dates.GS.RData")
@@ -87,7 +78,7 @@ if (comment.for.build == FALSE) {
                                                "2015-07-20", "2015-10-19")),
                                       stringsAsFactors = FALSE)
   names(IBM.earnings.dates) <- "date"
-  earnings.dates <- mutate(IBM.earnings.dates,
+  earnings.dates <- dplyr::mutate(IBM.earnings.dates,
                                   date = as.Date(date, origin = "1970-01-01"))
 
   save(earnings.dates, file = "data/earnings.dates.IBM.RData")

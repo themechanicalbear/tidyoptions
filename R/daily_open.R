@@ -1,9 +1,3 @@
-# title: "daily.R"
-# author: "Jason Taylor"
-
-# Todos:
-# - None at this time
-
 # Description:
 # - Use this script to recreate daily file for trade entry
 
@@ -13,9 +7,6 @@
 
 comment.for.build <- TRUE
 if (comment.for.build == FALSE) {
-# Ensure environment includes libraries needed
-library(dplyr)
-
 # Dates the market was closed and can'te be used in studies
 closed.dates <- c("2010-01-01", "2010-01-18","2010-02-15", "2010-04-02",
                   "2010-05-31", "2010-07-05", "2010-09-06", "2010-11-25",
@@ -43,15 +34,13 @@ daily <- as.data.frame(all.days("2010", "2020"))
 
 names(daily) <- "date"
 
-open.daily <- filter(daily, weekdays(daily$date, abbreviate = FALSE) != "Saturday")
-open.daily <- filter(open.daily, weekdays(open.daily$date, abbreviate = FALSE) != "Sunday")
+open.daily <- dplyr::filter(daily, weekdays(daily$date, abbreviate = FALSE) != "Saturday")
+open.daily <- dplyr::filter(open.daily, weekdays(open.daily$date, abbreviate = FALSE) != "Sunday")
 
 # If date is a market closed date remove
 open.daily <- dplyr::filter(open.daily, !date %in% closed.dates)
 
 # Save data to be resused in options.data package
 save(open.daily, file = "data/open.daily.RData")
-
-
 }
 
