@@ -1,4 +1,4 @@
-context("tidy_options")
+context("tidyoptions")
 
 test_that("tidy_options creates expected data.frame", {
   tidy_options("XLE", "data/raw_files", "data/volatility/vx.xle.daily.prices.RData", "output/")

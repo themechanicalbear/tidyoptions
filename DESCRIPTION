@@ -6,7 +6,7 @@ Title: Tidy options data from iVolatility.com used to perform backtesting of
 Description: Library enables customer to load processed options chain data
     downloaded from iVolatitly.com and processed with the data cleansing script.
     Then use functions to perform backtesting of options strategies using data
-    loaded with shinyoptions package
+    loaded with shinyoptions
 Authors@R: c(
     person("Jason", "Taylor", , "jason@themechanicalbear.com", c("aut", "cre")),
     person("The Mechanical Bear, LLC", role = "cph")

@@ -7,7 +7,11 @@
 #'
 #' @export
 #'
+#' @param strat string of strategy run
 #'
+#' @param close numeric of the trade close price
+#'
+#' @param profit numeric of the trade profit prior to commissions
 #'
 #' @examples
 #'
@@ -24,7 +28,7 @@
 
 # Function----------------------------------------------------------------------
 # Add in commission at a rate of $1.5 per contract excluding closing <= .05
-calc_comm <- function(strat = NULL, close = 0, profit = 0) {
+calc_comm <- function(strat, close, profit) {
   if (strat == "short_put") {
     ifelse(close <= .05, profit - 1.5, profit - 3)
   }

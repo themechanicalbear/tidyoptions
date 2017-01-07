@@ -17,16 +17,16 @@ trade_tooltip <- function(x) {
 
   # Pick out the trade with this trade.num
   trades <- isolate(trades())
-  trade <- trades[trades$trade.num == x$trade.num, ]
+  trade <- trades[trades$trade_num == x$trade_num, ]
 
-  paste0("Open: ", trade$open.date, "<br>",
-         "Close: ", trade$close.date, "<br>",
-         "Call strike: ", trade$call.strike, "<br>",
-         "Put strike: ", trade$put.strike, "<br>",
+  paste0("Open: ", trade$open_date, "<br>",
+         "Close: ", trade$close_date, "<br>",
+         "Call strike: ", trade$call_strike, "<br>",
+         "Put strike: ", trade$put_strike, "<br>",
          "DTE: ", trade$dte, "<br>",
-         "IVRank: ", trade$open.ivrank, "<br>",
-         "rsi: ", round(trade$open.rsi, digits = 0), "<br>",
-         "Exit: ", trade$exit.reason, "<br>",
+         "IVRank: ", trade$open_ivrank, "<br>",
+         "rsi: ", round(trade$open_rsi, digits = 0), "<br>",
+         "Exit: ", trade$exit_reason, "<br>",
          "Profit: $", format(trade$profit, big.mark = ",", scientific = FALSE)
   )
 }

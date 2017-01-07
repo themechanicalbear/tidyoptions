@@ -3,9 +3,9 @@ knitr::opts_chunk$set(collapse = T, comment = "#>")
 options(tibble.print_min = 4L, tibble.print_max = 4L)
 library(dplyr)
 library(data.table)
+library(tidyoptions)
 
 ## ---- echo=FALSE, results='asis', warning=FALSE, message=FALSE, error=FALSE----
-library(tidyoptions)
 knitr::kable(raw_example[, 1:10])
 knitr::kable(raw_example[, 11:22])
 

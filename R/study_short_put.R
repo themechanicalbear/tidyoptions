@@ -1,8 +1,7 @@
 #' Short put options strategy
 #'
 #' @description{
-#' short_put opens a short put trade that meet criteria chosen in the Shiny UI from
-#' package shinyoptions
+#' short_put opens a short put trade that meet criteria chosen in the Shiny UI from shinyoptions
 #' }
 #'
 #' @export
@@ -53,13 +52,22 @@ short_put <- function(progress.int, t) {
     # Loop through all trades and find the results
    for (i in 1:nrow(p_positions))  {
       #shiny::incProgress(progress.int)
-      p <- p_positions[i, "mid.price"]
-      o <- p_positions[i, "date"]
-      e <- p_positions[i, "expiration"]
-      s <- p_positions[i, "strike"]
-      j <- p_positions[i, "trade_num"]
-      ns <- p_positions[i, "num_shares"]
-      osp <- p_positions[i, "opening_price"]
+      # p <- p_positions[i, mid.price]
+      # o <- p_positions[i, date]
+      # e <- p_positions[i, expiration]
+      # s <- p_positions[i, strike]
+      # j <- p_positions[i, trade_num]
+      # ns <- p_positions[i, num_shares]
+      # osp <- p_positions[i, opening_price]
+     this_row <- p_positions[i, ]
+     p <- this_row$mid.price
+     o <- this_row$date
+     e <- this_row$expiration
+     s <- this_row$strike
+     j <- this_row$trade_num
+     ns <- this_row$num_shares
+     osp <- this_row$opening_price
+
       xc <- p - (p * prof_targ)
       xl <- p * loss_lim
 
@@ -105,22 +113,24 @@ short_put <- function(progress.int, t) {
     results <- dplyr::ungroup(results)
 
     # Merge the opening and closing data frames to calculate profit loss
-    results <- dplyr::left_join(results, p_positions, by = c("trade_num", "expiration"))
-    #merge_results <- merge(results, p_positions, c("trade_num", "expiration"))
-    results <- dplyr::mutate(results, profit_loss = 100 * (mid.price.y - mid.price.x))
-    results <- dplyr::mutate(results, year = year(date.y))
-    results <- dplyr::select(results, expiration, trade_num, close_date = date.x, put_strike = strike.x, close_price = mid.price.x,
-                      close_rsi = rsi_14.x, close_ivrank = iv_rank_252.x, open_date = date.y, price = price.y, open_price = mid.price.y,
-                      delta = delta.y, dte = dte.y, open_rsi = rsi_14.y, open_ivrank = iv_rank_252.y, exp_type = exp_type.y,
-                      profit_loss, year, exit_reason, option_margin, open_roc, hold_profit)
+    results <- results %>%
+      dplyr::left_join(p_positions, by = c("trade_num", "expiration")) %>%
+      dplyr::mutate(profit_loss = 100 * (mid.price.y - mid.price.x),
+                    year = year(date.y)) %>%
+      dplyr::select(expiration, trade_num, close_date = date.x, put_strike = strike.x, close_price = mid.price.x,
+                    close_rsi = rsi_14.x, close_ivrank = iv_rank_252.x, open_date = date.y, price = price.y, open_price = mid.price.y,
+                    delta = delta.y, dte = dte.y, open_rsi = rsi_14.y, open_ivrank = iv_rank_252.y, exp_type = exp_type.y,
+                    profit_loss, year, exit_reason, option_margin, open_roc, hold_profit)
 
     # Add in commission at a rate of $1.5 per trade excluding closing <= .05
-    results <- dplyr::mutate(results, profit = calc_comm(strat = "short_put", close = close_price, profit = profit_loss),
-                      open_roc = round(open_roc, digits = 2),
-                      open_ivrank = round(open_ivrank, digits = 0),
-                      call_strike = "NA",
-                      days_held = as.numeric(close_date) - as.numeric(open_date),
-                      Profitable = ifelse(profit > 0, "Yes", "No"))
+    results <- results %>%
+      dplyr::mutate(profit = ifelse(close_price <= .05, profit_loss - 1.5, profit_loss - 3),
+                      #calc_comm(strat = "short_put", close = close_price, profit = profit_loss),
+                    open_roc = round(open_roc, digits = 2),
+                    open_ivrank = round(open_ivrank, digits = 0),
+                    call_strike = "NA",
+                    days_held = as.numeric(close_date) - as.numeric(open_date),
+                    Profitable = ifelse(profit > 0, "Yes", "No"))
   }) # End closing trades progress bar
   shiny::withProgress(message = "Progress Bar", detail = "Creating Plot", value = .95, {
     # select fields we want displayed in the table view

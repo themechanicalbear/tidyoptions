@@ -26,16 +26,16 @@ output_HTML <- function(){
     HTML(paste0("Percent winners: ", percent_winners))
   })
   output$exit.profit.target <- renderUI({
-    HTML(paste0("Profit target: ", exit.profit.target))
+    HTML(paste0("Profit target: ", exit_profit_target))
   })
   output$exit.loss.limit <- renderUI({
-    HTML(paste0("Loss limit: ", exit.loss.limit))
+    HTML(paste0("Loss limit: ", exit_loss_limit))
   })
   output$exit.expiration <- renderUI({
-    HTML(paste0("Expiration: ", exit.expiration))
+    HTML(paste0("Expiration: ", exit_expiration))
     })
   output$exit.gamma.risk <- renderUI({
-    HTML(paste0("Gamma risk: ", exit.gamma.risk))
+    HTML(paste0("Gamma risk: ", exit_gamma_risk))
     })
   # output$exit.earnings <- renderUI({
   #   HTML(paste0("Earnings: ", exit.earnings))
@@ -49,7 +49,7 @@ output_HTML <- function(){
   # output$avg.exit.roc <- renderUI({
   #   HTML(paste0("Avg Exit ROC: ", round(avg.exit.roc, digits = 2), "%"))
   #   })
-  output$avg.entry.margin <- renderUI({
-    HTML(paste0("Avg Entry Margin: $", print_money(round(avg.entry.margin, digits = 2))))
+  output$avg_entry_margin <- renderUI({
+    HTML(paste0("Avg Entry Margin: $", print_money(round(avg_entry_margin, digits = 2))))
     })
 }

@@ -4,7 +4,14 @@
 \alias{calc_comm}
 \title{Calculate commisions on trade execution}
 \usage{
-calc_comm(strat = NULL, close = 0, profit = 0)
+calc_comm(strat, close, profit)
+}
+\arguments{
+\item{strat}{string of strategy run}
+
+\item{close}{numeric of the trade close price}
+
+\item{profit}{numeric of the trade profit prior to commissions}
 }
 \description{
 {

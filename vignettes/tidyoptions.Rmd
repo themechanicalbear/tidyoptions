@@ -13,6 +13,7 @@ knitr::opts_chunk$set(collapse = T, comment = "#>")
 options(tibble.print_min = 4L, tibble.print_max = 4L)
 library(dplyr)
 library(data.table)
+library(tidyoptions)
 ```
 
 When creating tidy options data you must:
@@ -36,7 +37,6 @@ This document introduces you to tidyoptions's functions and shows you how to app
 Sample of the data retrieved from iVolatility.com read in from the raw .csv files
 
 ```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE, error=FALSE}
-library(tidyoptions)
 knitr::kable(raw_example[, 1:10])
 knitr::kable(raw_example[, 11:22])
 ```

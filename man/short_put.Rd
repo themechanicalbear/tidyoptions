@@ -8,8 +8,7 @@ short_put(progress.int, t)
 }
 \description{
 {
-short_put opens a short put trade that meet criteria chosen in the Shiny UI from
-package shinyoptions
+short_put opens a short put trade that meet criteria chosen in the Shiny UI from shinyoptions
 }
 }
 \examples{
