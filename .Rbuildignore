@@ -3,5 +3,6 @@
 data/raw_files/*
 working/*
 tests/*
+data/options/*
 
 

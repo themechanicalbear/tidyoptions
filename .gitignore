@@ -25,6 +25,7 @@
 *.Rproj
 .Rproj.user
 data/options/*
+data/*.options.RData
 data/raw_files/*
 working/*
 tests/testthat/*
