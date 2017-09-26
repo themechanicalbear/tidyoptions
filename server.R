@@ -84,13 +84,15 @@ shiny::shinyServer(function(input, output, session) {
       assign("min_roc", input$min_roc, envir = .GlobalEnv)
       assign("p_delta_lim", p_delta + .1, envir = .GlobalEnv)
       assign("c_delta_lim", c_delta - .1, envir = .GlobalEnv)
-      assign("stock_list", as.data.frame(symbol_list[-length(symbol_list)],
-                                         stringsAsFactors = FALSE), envir = .GlobalEnv)
+      #assign("stock_list", as.data.frame(symbol_list[-length(symbol_list)],
+      #                                   stringsAsFactors = FALSE), envir = .GlobalEnv)
+      #assign("stock_list", as.data.frame(symbol_list, stringsAsFactors = FALSE), envir = .GlobalEnv)
 
       # Load option chain data for stock chosen by customer
-      if (!stock == "ALL") {
-        data(list = paste0("XLE.options"))
-      }
+      # if (!stock == "ALL") {
+      #   data(list = paste0(stock, ".options"))
+      # }
+      data_set <- get(load(paste0("data/", stock, "_options.RData")))
 
       # # Opening frequency
       # if (openOption == "First of Month") {
@@ -126,12 +128,12 @@ shiny::shinyServer(function(input, output, session) {
     # if (study == "Long Stock") {
     #   LongStock(progress.int, t)}
     if (study == "Strangle") {
-      if (stock == "ALL") {
-        for (i in 1:nrow(stock_list)) {
-          data(list = paste0(stock_list[i, ], ".options"))
-          strangle(progress.int, t)}}
-      else {
-        strangle(progress.int, t)}}
+      # if (stock == "ALL") {
+      #   for (i in 1:nrow(stock_list)) {
+      #     data(list = paste0(stock_list[i, ], ".options"))
+      #     strangle(progress.int, t)}}
+      # else {
+        strangle(progress.int, data_set, t)}#}
     if (study == "Straddle") {
       straddle(progress.int, t)}
     # if (study == "Strangle Daily Close") {
@@ -183,10 +185,9 @@ shiny::shinyServer(function(input, output, session) {
     ))
     # Download table
     output$downloadData <- shiny::downloadHandler(
-      filename = function() { paste(stock, 'pdelta', as.character(p_delta),
-                                    'cdelta', as.character(c_delta), 'results.csv') },
+      filename = function() { paste0(stock, '_1SD_60DTE_Strangle_', as.character(prof_targ), '%_', as.character(loss_lim - 1), 'X_results.csv') },
       content = function(file) {
-        write.csv(results_table, file)
+        write.csv(results.table, file)
       }
     )
   })
