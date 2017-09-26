@@ -14,7 +14,7 @@
 #' @importFrom data.table fread
 #'
 #' @examples
-#' market_closed <- mrkt_closed("data/market_closed.csv")
+#' mrkt_closed("data/market_closed.csv")
 
 mrkt_closed <- function(file_name) {
   market_closed <- fread(file_name)

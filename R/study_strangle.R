@@ -16,7 +16,7 @@
 #'
 #' @examples
 #'
-strangle <- function(progress.int, t) {
+strangle <- function(progress.int, data_set, t) {
   shiny::withProgress(message = "Progress Bar", detail = "Opening Trades", {
     p_positions <- data_frame()
     c_positions <- data_frame()
@@ -30,9 +30,9 @@ strangle <- function(progress.int, t) {
       t <- 0
     }
 
-    min_date <- min(complete.data$date)
-    max_date <- max(complete.data$date)
-    trade_data <- complete.data %>%
+    min_date <- min(data_set$date)
+    max_date <- max(data_set$date)
+    trade_data <- data_set %>%
       dplyr::filter(expiration <= max_date,
                     iv_rank_252 >= low_iv,
                     iv_rank_252 <= high_iv)
@@ -41,7 +41,7 @@ strangle <- function(progress.int, t) {
                     date <= (max_date - 20))
 
     for (i in unique(first_day$date))  {
-      incProgress(progress.int)
+      #incProgress(progress.int)
       t <- t + 1
       start_data <- trade_data %>%
         dplyr::filter(date == i)
@@ -55,33 +55,35 @@ strangle <- function(progress.int, t) {
           dplyr::filter(delta == min(delta)) %>%
           dplyr::mutate(put_option_margin = (100 * ((.2 * price) - (price - strike) + mid.price)))
 
-        call_trade <- start_data %>%
-          dplyr::filter(call.put == "C",
-                        dte == put_trade$dte,
-                        delta <= c_delta,
-                        delta >= c_delta_lim) %>%
-          dplyr::filter(delta == max(delta)) %>%
-          dplyr::mutate(call_option_margin = (100 * ((.2 * price) - (strike - price) + mid.price)))
+        if (nrow(put_trade) > 0) {
+          call_trade <- start_data %>%
+            dplyr::filter(call.put == "C",
+                          dte == put_trade$dte,
+                          delta <= c_delta,
+                          delta >= c_delta_lim) %>%
+            dplyr::filter(delta == max(delta)) %>%
+            dplyr::mutate(call_option_margin = (100 * ((.2 * price) - (strike - price) + mid.price)))
 
-        if (nrow(call_trade) > 0 && nrow(put_trade) > 0)  {
-          put_option_margin <- put_trade$put_option_margin
-          call_option_margin <- call_trade$call_option_margin
-          option_margin <- ifelse(put_option_margin > call_option_margin, put_option_margin + (100 * call_trade$mid.price),
-                                  call_option_margin + (100 * put_trade$mid.price))
-          opening_stock_margin <- 30 * call_trade$price
+          if (nrow(call_trade) > 0)  {
+            put_option_margin <- put_trade$put_option_margin
+            call_option_margin <- call_trade$call_option_margin
+            option_margin <- ifelse(put_option_margin > call_option_margin, put_option_margin + (100 * call_trade$mid.price),
+                                    call_option_margin + (100 * put_trade$mid.price))
+            opening_stock_margin <- 30 * call_trade$price
 
-          call_trade <- dplyr::mutate(call_trade,
-                                      trade_num = t,
-                                      type = "call",
-                                      open_stock_price = price,
-                                      num_shares = round(100 * (option_margin / opening_stock_margin), digits = 0))
-          put_trade <- dplyr::mutate(put_trade,
-                                     trade_num = t,
-                                     type = "put",
-                                     open_stock_price = price,
-                                     num_shares = round(100 * (option_margin / opening_stock_margin), digits = 0))
-          c_positions <- dplyr::bind_rows(c_positions, call_trade)
-          p_positions <- dplyr::bind_rows(p_positions, put_trade)
+            call_trade <- dplyr::mutate(call_trade,
+                                        trade_num = t,
+                                        type = "call",
+                                        open_stock_price = price,
+                                        num_shares = round(100 * (option_margin / opening_stock_margin), digits = 0))
+            put_trade <- dplyr::mutate(put_trade,
+                                       trade_num = t,
+                                       type = "put",
+                                       open_stock_price = price,
+                                       num_shares = round(100 * (option_margin / opening_stock_margin), digits = 0))
+            c_positions <- dplyr::bind_rows(c_positions, call_trade)
+            p_positions <- dplyr::bind_rows(p_positions, put_trade)
+          }
         }
       }
     }
@@ -96,7 +98,7 @@ strangle <- function(progress.int, t) {
       # Closing trades possible ----
       profit_target <- (c_position$mid.price + p_position$mid.price) * prof_targ
       loss_limit <- (c_position$mid.price + p_position$mid.price) * loss_lim
-      all_possible_closes <- complete.data %>%
+      all_possible_closes <- data_set %>%
         dplyr::filter(date >= c_position$date,
                       date <= c_position$expiration,
                       expiration == c_position$expiration)
@@ -141,7 +143,7 @@ strangle <- function(progress.int, t) {
           dplyr::mutate(trade_num = c_position$trade_num,
                         exit_reason = ifelse(curr_price <= (c_position$mid.price + p_position$mid.price) - profit_target, "Profit target", "Loss limit"),
                         close_price = ifelse(curr_price <= (c_position$mid.price + p_position$mid.price) - profit_target, ((c_position$mid.price + p_position$mid.price) - profit_target) / 2,
-                                      loss_limit / 2), hold_profit = p_position$num_shares * (price - p_position$open_stock_price), num_shares = p_position$num_shares)
+                                             loss_limit / 2), hold_profit = p_position$num_shares * (price - p_position$open_stock_price), num_shares = p_position$num_shares)
         put_close <- dplyr::filter(possible_close, call.put == "P")
         call_close <- dplyr::filter(possible_close, call.put == "C")
         put_results <- dplyr::bind_rows(put_results, put_close)
@@ -218,21 +220,21 @@ strangle <- function(progress.int, t) {
       dplyr::select(trade_num,
                     symbol = symbol.x,
                     expiration = expiration.x,
-             close_date = date.x,
-             put_strike = strike.x,
-             put_close_price = close_price,
-             open_date = date.y,
-             price = price.y,
-             put_open_price = mid.price.y,
-             put_delta = delta.y,
-             dte = dte.y,
-             open_rsi = rsi_14.y,
-             open_ivrank = iv_rank_252.y,
-             put_profit = profit_loss,
-             year,
-             exit_reason,
-             hold_profit,
-             num_shares = num_shares.y)
+                    close_date = date.x,
+                    put_strike = strike.x,
+                    put_close_price = close_price,
+                    open_date = date.y,
+                    price = price.y,
+                    put_open_price = mid.price.y,
+                    put_delta = delta.y,
+                    dte = dte.y,
+                    open_rsi = rsi_14.y,
+                    open_ivrank = iv_rank_252.y,
+                    put_profit = profit_loss,
+                    year,
+                    exit_reason,
+                    hold_profit,
+                    num_shares = num_shares.y)
 
     # Add in commission at a rate of $1.5 per trade excluding closing for .05 or less ----
     put_results <- put_results %>%
@@ -246,16 +248,16 @@ strangle <- function(progress.int, t) {
                                   "open_rsi", "exit_reason", "hold_profit", "year", "price", "num_shares"))
     trade_results <- trade_results %>%
       dplyr::mutate(open_date = as.Date(as.numeric(open_date), origin = "1970-01-01"),
-             close_date = as.Date(as.numeric(close_date), origin = "1970-01-01"),
-             put_credit = as.numeric(put_open_price) * 100,
-             open_ivrank = as.integer(open_ivrank),
-             open_rsi = as.integer(open_rsi),
-             call_credit = as.numeric(call_open_price) * 100,
-             profit = as.numeric(call_profit + put_profit),
-             year = year(open_date),
-             days_held = as.numeric(close_date) - as.numeric(open_date),
-             Profitable = ifelse(profit > 0, "Yes", "No"),
-             hold_profit = as.numeric(hold_profit)) %>%
+                    close_date = as.Date(as.numeric(close_date), origin = "1970-01-01"),
+                    put_credit = as.numeric(put_open_price) * 100,
+                    open_ivrank = as.integer(open_ivrank),
+                    open_rsi = as.integer(open_rsi),
+                    call_credit = as.numeric(call_open_price) * 100,
+                    profit = as.numeric(call_profit + put_profit),
+                    year = year(open_date),
+                    days_held = as.numeric(close_date) - as.numeric(open_date),
+                    Profitable = ifelse(profit > 0, "Yes", "No"),
+                    hold_profit = as.numeric(hold_profit)) %>%
       dplyr::select(symbol,
                     open_date,
                     close_date,
