@@ -12,6 +12,8 @@
 #'
 #' @importFrom RcppBDT getNthDayOfWeek
 #'
+#' @export
+#'
 #' @examples
 #' third_friday(2010, 2015)
 
