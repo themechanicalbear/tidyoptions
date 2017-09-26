@@ -16,6 +16,7 @@ library(shiny)
 library(shinydashboard)
 library(shinyjs)
 library(shinythemes)
+library(scales)
 
 # Shiny UI----------------------------------------------------------------------
 # JavaScript ----
