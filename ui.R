@@ -12,6 +12,10 @@
 # Argument names in functions (df, x, y, z, p, n)
 # detail arguments should always be given a default value
 
+library(shiny)
+library(shinydashboard)
+library(shinyjs)
+library(shinythemes)
 
 # Shiny UI----------------------------------------------------------------------
 # JavaScript ----
