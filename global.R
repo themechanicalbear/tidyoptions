@@ -21,4 +21,4 @@ axis_vars <- c(
   "Year" = "year"
   )
 
-symbol_list <- c("XLE", "AMZN", "EEM", "EWZ", "FXI", "GDX", "GS", "IBM", "SLV", "SPY")
+symbol_list <- c("AMZN", "EEM", "EWZ", "FXI", "GDX", "GS", "IBM", "SLV", "SPY", "XLE")
